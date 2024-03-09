@@ -1,0 +1,9 @@
+// .sequelizerc
+const { join } = require('path')
+
+module.exports = {
+  config: join(__dirname, 'config', 'config.json'),
+  'models-path': join(__dirname, 'models'),
+  'seeders-path': join(__dirname, 'seeders'),
+  'migrations-path': join(__dirname, 'migrations')
+}
