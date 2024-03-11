@@ -4,7 +4,7 @@ type OtpCodeAttributes = {
   optCodeId?: number
   userId: number
   otpCode: string
-  isUsed: boolean
+  isUsed?: boolean
   expiresAt: Date
 }
 
@@ -19,6 +19,12 @@ export class OtpCode extends Model<OtpCodeAttributes> {
 export default function (sequelize: Sequelize): typeof OtpCode {
   OtpCode.init(
     {
+      optCodeId: {
+        type: DataTypes.NUMBER,
+        autoIncrement: true,
+        primaryKey: true,
+        allowNull: true
+      },
       userId: {
         type: DataTypes.INTEGER,
         references: {
@@ -31,7 +37,8 @@ export default function (sequelize: Sequelize): typeof OtpCode {
         type: DataTypes.STRING
       },
       isUsed: {
-        type: DataTypes.BOOLEAN
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
       },
       expiresAt: {
         type: DataTypes.DATE
