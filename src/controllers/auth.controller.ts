@@ -6,6 +6,10 @@ import { OtpCode, User } from '~/models/schemas'
 import { User as UserSchema } from '~/models/schemas/user.schema'
 import { LoginReqBody, RegisterReqBody } from '~/models/request/user.requests'
 import moment from 'moment'
+import fs from 'fs'
+import path from 'path'
+import ejs from 'ejs'
+import { sendMail } from '~/utils/mailer'
 
 interface CustomSession extends session.Session {
   user?: UserSchema
@@ -64,7 +68,18 @@ export const registerController = async (req: Request<ParamsDictionary, any, Reg
     })
 
     // Send otp to user
-    console.log({ randomOTPCode })
+    const templatePath = path.resolve('src/views/users/sendOTP.ejs')
+    const templateContent = fs.readFileSync(templatePath, 'utf8')
+
+    const compiledTemplate = ejs.compile(templateContent)
+    const otpTemplate = compiledTemplate({ email: newUser.email, otpCode: randomOTPCode })
+
+    sendMail({
+      to: newUser.email,
+      subject: 'OTP Notification',
+      html: otpTemplate
+    })
+
     return res.render('users/register', {
       message: 'User registered successfully. Please check your email for verification'
     })
