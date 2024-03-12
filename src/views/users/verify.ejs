@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify OTP Code</title>
+    <link rel="stylesheet" href="/css/verify.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Verify OTP Code</h1>
+        <form id="verifyForm" action="/auth/verify" method="POST">
+            <label for="otp">An OTP has been sent to your email, please check and enter it here:</label>
+            <input type="text" id="otp" name="otpCode" placeholder="Enter OTP Code" required>
+            <button type="submit">Verify</button>
+        </form>
+        <div id="messagePopup" class="message-popup"></div>
+        <div class="resend">
+            <p>You haven't received the code or the code has expired?</p>
+            <button type="button" id="resendButton">Resend OTP</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        // document.getElementById('verifyForm').addEventListener('submit', function (event) {
+        //     event.preventDefault();
+        //     const otpCode = document.getElementById('otp').value;
+
+        //     axios.post('/auth/verify', { otpCode })
+        //         .then(function (response) {
+
+        //             console.log('Response:', response.data);
+        //         })
+        //         .catch(function (error) {
+        //             console.error('Error:', error);
+        //         });
+        // });
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const message = '<%= message %>';
+
+            if (message) {
+                const messagePopup = document.getElementById('messagePopup');
+                messagePopup.innerText = message;
+                messagePopup.style.display = 'block';
+
+                // Tự đóng popup sau một khoảng thời gian
+                setTimeout(function () {
+                    messagePopup.style.display = 'none';
+                }, 5000); // Popup sẽ tự đóng sau 5 giây
+            }
+        });
+    </script>
+</body>
+
+</html>

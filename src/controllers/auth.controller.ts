@@ -10,6 +10,7 @@ import fs from 'fs'
 import path from 'path'
 import ejs from 'ejs'
 import { sendMail } from '~/utils/mailer'
+import { Op } from 'sequelize'
 
 interface CustomSession extends session.Session {
   user?: UserSchema
@@ -31,7 +32,7 @@ export const loginController = async (req: Request<ParamsDictionary, any, LoginR
     }
 
     if (user.isVerified === false) {
-      return res.render('verify', { message: 'Please verify your account to log in' })
+      return res.render('users/verify', { message: 'Please verify your account to log in' })
     }
 
     const session = req.session as CustomSession
@@ -74,7 +75,7 @@ export const registerController = async (req: Request<ParamsDictionary, any, Reg
     const compiledTemplate = ejs.compile(templateContent)
     const otpTemplate = compiledTemplate({ email: newUser.email, otpCode: randomOTPCode })
 
-    sendMail({
+    await sendMail({
       to: newUser.email,
       subject: 'OTP Notification',
       html: otpTemplate
@@ -85,9 +86,32 @@ export const registerController = async (req: Request<ParamsDictionary, any, Reg
     // })
     const session = req.session as CustomSession
     session.user = newUser
-    return res.redirect('users/verify')
+    return res.redirect('/auth/verify')
   } catch (error) {
     console.error('Registration error:', error)
+    res.status(500).render('error', { message: 'Internal server error' })
+  }
+}
+
+export const verifyController = async (req: Request, res: Response) => {
+  try {
+    const { otpCode } = req.body
+    const userId: number = (req.session as CustomSession).user?.userId as number
+
+    const otpRecord = await OtpCode.findOne({
+      where: { userId, otpCode, isUsed: false, expiresAt: { [Op.gt]: new Date() } },
+      order: [['expiresAt', 'DESC']]
+    })
+    if (!otpRecord) {
+      return res.status(400).render('users/verify', { message: 'Invalid OTP code' })
+    }
+
+    // Mã OTP hợp lệ, cập nhật isUsed trong bảng otpcode và isVerified trong bảng user thành true
+    otpRecord.isUsed = true
+    Promise.all([otpRecord.save(), User.update({ isVerified: true }, { where: { userId: userId } })])
+    return res.status(200).redirect('/auth/login')
+  } catch (error) {
+    console.error('Verify error:', error)
     res.status(500).render('error', { message: 'Internal server error' })
   }
 }
