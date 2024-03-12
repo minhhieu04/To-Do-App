@@ -8,3 +8,7 @@ export interface RegisterReqBody {
   password: string
   email: string
 }
+
+export interface ResendOTPBody {
+  email: string
+}

@@ -97,3 +97,57 @@ button[name='resend']:hover {
   border: 1px solid #9de18e;
   color: #f1edee;
 }
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+}
+
+.close {
+  color: #aaaaaa;
+  float: right;
+  font-size: 36px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #e83434;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* CSS để điều chỉnh kích thước của ô input và nút Send OTP */
+#email {
+  width: 80%;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+#sendOtpButton {
+  width: 20%;
+  padding: 10px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+#sendOtpButton:hover {
+  background-color: #45a049;
+}

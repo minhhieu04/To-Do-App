@@ -1,11 +1,17 @@
 import { Router } from 'express'
-import { loginController, registerController, verifyController } from '~/controllers/auth.controller'
+import {
+  loginController,
+  registerController,
+  resendOtpController,
+  verifyController
+} from '~/controllers/auth.controller'
 
 const authRoutes = Router()
 
 authRoutes.post('/login', loginController)
 authRoutes.post('/register', registerController)
 authRoutes.post('/verify', verifyController)
+authRoutes.post('/resend', resendOtpController)
 
 authRoutes.get('/login', (req, res) => {
   res.render('users/login')
