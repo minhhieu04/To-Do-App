@@ -23,6 +23,18 @@
         </div>
     </div>
 
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <form id="resendForm" action="/auth/resend" method="POST">
+                <label for="email">Enter your email:</label>
+                <input id="email" type="email" id="email" name="email" placeholder="Enter your email" required>
+                <div id="messagePopup" class="message-popup"></div>
+                <button id="sendOtpButton" type="submit">Send OTP</button>
+            </form>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
         // document.getElementById('verifyForm').addEventListener('submit', function (event) {
@@ -39,6 +51,77 @@
         //         });
         // });
 
+        // document.getElementById('resendButton').addEventListener('click', function () {
+        //     axios.post('/auth/resend')
+        //         .then(function (response) {
+        //             console.log('Response:', response.data);
+        //             // Display success message
+        //             const successMessage = document.createElement('div');
+        //             successMessage.textContent = 'OTP has been resent successfully.';
+        //             successMessage.classList.add('success-message');
+        //             document.body.appendChild(successMessage);
+        //             // Remove success message after 5 seconds
+        //             setTimeout(function () {
+        //                 successMessage.remove();
+        //             }, 5000);
+        //         })
+        //         .catch(function (error) {
+        //             console.error('Error:', error)
+        //         });
+        // });
+
+        // Mở modal khi nhấn nút resend
+        document.getElementById('resendButton').addEventListener('click', function () {
+            document.getElementById('myModal').style.display = 'block';
+        });
+
+        // Đóng modal khi nhấn vào nút close hoặc click ra ngoài modal
+        var modal = document.getElementById('myModal');
+        var closeBtn = document.getElementsByClassName('close')[0];
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        };
+        closeBtn.onclick = function () {
+            modal.style.display = 'none';
+        };
+
+        // Xử lý form gửi OTP
+        document.getElementById('resendForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const email = document.getElementById('email').value;
+            axios.post('/auth/resend', { email })
+                .then(function (response) {
+                    console.log('Response:', response);
+                    const status = response.status;
+                    if (status === 201) {
+                        alert(response.data.message);
+                        document.getElementById('myModal').style.display = 'none';
+                    } else {
+                        alert('Failed to resend OTP. Please try again.');
+                    }
+                })
+                .catch(function (error) {
+                    console.error('Error:', error);
+                    if (error.response) {
+                        const responseErrorMessage = error.response.data.message
+                        const responseErrorStatus = error.response.status
+
+                        if (responseErrorStatus === 400) {
+                            alert(responseErrorMessage);
+                        } else if (responseErrorStatus === 404) {
+                            alert(responseErrorMessage);
+                        } else {
+                            alert('An error occurred. Please try again.');
+                        }
+                    } else {
+                        alert('An error occurred. Please try again.');
+                    }
+                });
+        });
+
+
 
         document.addEventListener('DOMContentLoaded', function () {
             const message = '<%= message %>';
@@ -51,7 +134,7 @@
                 // Tự đóng popup sau một khoảng thời gian
                 setTimeout(function () {
                     messagePopup.style.display = 'none';
-                }, 5000); // Popup sẽ tự đóng sau 5 giây
+                }, 5000);
             }
         });
     </script>

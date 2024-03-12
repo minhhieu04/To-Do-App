@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs'
 import { ParamsDictionary } from 'express-serve-static-core'
 import { OtpCode, User } from '~/models/schemas'
 import { User as UserSchema } from '~/models/schemas/user.schema'
-import { LoginReqBody, RegisterReqBody } from '~/models/request/user.requests'
+import { LoginReqBody, RegisterReqBody, ResendOTPBody } from '~/models/request/user.requests'
 import moment from 'moment'
 import fs from 'fs'
 import path from 'path'
@@ -112,6 +112,49 @@ export const verifyController = async (req: Request, res: Response) => {
     return res.status(200).redirect('/auth/login')
   } catch (error) {
     console.error('Verify error:', error)
+    res.status(500).render('error', { message: 'Internal server error' })
+  }
+}
+
+export const resendOtpController = async (req: Request<ParamsDictionary, any, ResendOTPBody>, res: Response) => {
+  try {
+    const { email } = req.body
+    const user = await User.findOne({ where: { email } })
+    if (!user) {
+      return res.status(404).json({ message: 'Email not found' })
+    }
+    if (user?.isVerified === true) {
+      return res.status(400).json({
+        message: 'User has been verified before'
+      })
+    }
+    const randomOTPCode = Math.floor(100000 + Math.random() * 900000).toString()
+
+    // save otp in database
+    const otpExpirationTime = moment().add(1, 'days').toDate()
+    await OtpCode.create({
+      userId: (user as UserSchema).userId,
+      otpCode: randomOTPCode,
+      expiresAt: otpExpirationTime
+    })
+
+    // Send otp to user
+    const templatePath = path.resolve('src/views/users/sendOTP.ejs')
+    const templateContent = fs.readFileSync(templatePath, 'utf8')
+
+    const compiledTemplate = ejs.compile(templateContent)
+    const otpTemplate = compiledTemplate({ email, otpCode: randomOTPCode })
+
+    await sendMail({
+      to: email,
+      subject: 'OTP Notification',
+      html: otpTemplate
+    })
+    return res
+      .status(201)
+      .json({ message: 'An OTP code has been sent to your email. Please check your email for verification' })
+  } catch (error) {
+    console.error('Resend error:', error)
     res.status(500).render('error', { message: 'Internal server error' })
   }
 }
