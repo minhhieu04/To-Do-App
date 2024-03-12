@@ -6,6 +6,7 @@ import { dbConnection } from './config/dbconnect'
 import session from 'express-session'
 import { config } from 'dotenv'
 import authRoutes from './routes/auth.routes'
+import { sendMail } from './utils/mailer'
 
 config()
 
@@ -41,6 +42,7 @@ app.use('/auth', authRoutes)
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'ejs')
 
+console.log(path.resolve('src/views/users/sendOTP.ejs'))
 dbConnection()
   .then(() => {
     app.listen(PORT, () => {
