@@ -80,9 +80,12 @@ export const registerController = async (req: Request<ParamsDictionary, any, Reg
       html: otpTemplate
     })
 
-    return res.render('users/register', {
-      message: 'User registered successfully. Please check your email for verification'
-    })
+    // return res.render('users/register', {
+    //   message: 'User registered successfully. Please check your email for verification'
+    // })
+    const session = req.session as CustomSession
+    session.user = newUser
+    return res.redirect('users/verify')
   } catch (error) {
     console.error('Registration error:', error)
     res.status(500).render('error', { message: 'Internal server error' })
