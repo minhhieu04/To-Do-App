@@ -25,17 +25,17 @@ module.exports = {
       description: {
         type: Sequelize.STRING
       },
-      due_date: {
+      dueDate: {
         type: Sequelize.DATE
       },
-      status: {
+      statusId: {
         type: Sequelize.INTEGER,
         references: {
           model: 'Statuses',
           key: 'statusId'
         }
       },
-      priority: {
+      priorityId: {
         type: Sequelize.INTEGER,
         references: {
           model: 'Priorities',

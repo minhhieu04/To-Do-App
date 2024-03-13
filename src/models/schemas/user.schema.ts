@@ -23,13 +23,13 @@ export default function (sequelize: Sequelize): typeof User {
   User.init(
     {
       userId: {
-        type: DataTypes.NUMBER,
+        type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true,
         allowNull: true
       },
       name: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(50),
         allowNull: false
       },
       password: {

@@ -37,7 +37,7 @@ export const loginController = async (req: Request<ParamsDictionary, any, LoginR
 
     const session = req.session as CustomSession
     session.user = user
-    res.redirect('/tasks-dashboard')
+    res.redirect('task/')
   } catch (error) {
     console.error('Login error:', error)
     res.status(500).render('error', { message: 'Internal server error' })
@@ -106,7 +106,7 @@ export const verifyController = async (req: Request, res: Response) => {
       return res.status(400).render('users/verify', { message: 'Invalid OTP code' })
     }
 
-    // Mã OTP hợp lệ, cập nhật isUsed trong bảng otpcode và isVerified trong bảng user thành true
+    // OTP code is valid, update isUsed in the otpcode table and isVerified in the user table to true
     otpRecord.isUsed = true
     Promise.all([otpRecord.save(), User.update({ isVerified: true }, { where: { userId: userId } })])
     return res.status(200).redirect('/auth/login')

@@ -1,6 +1,6 @@
 import { DataTypes, Model, Sequelize } from 'sequelize'
 
-type StatusAttributes = {
+interface StatusAttributes {
   statusId?: number
   name: string
 }
@@ -13,8 +13,13 @@ export class Status extends Model<StatusAttributes> {
 export default function (sequelize: Sequelize): typeof Status {
   Status.init(
     {
+      statusId: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+      },
       name: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING(50)
       }
     },
     {

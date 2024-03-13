@@ -1,0 +1,130 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+main {
+  padding: 20px 0;
+}
+
+.container {
+  width: 80%;
+  margin: 0 auto;
+}
+
+header {
+  background-color: #333;
+  color: #fff;
+  padding: 20px 0;
+}
+
+header button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#addTaskButton {
+  margin-right: 10px;
+}
+
+#logoutButton {
+  background-color: #dc3545;
+}
+
+#logoutButton:hover {
+  background-color: #c82333;
+}
+
+header .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.headerRow,
+.taskRow {
+  display: flex;
+  align-items: center;
+  background-color: #007bff;
+  color: #fff;
+  padding: 10px;
+}
+
+.header,
+.task {
+  flex: 1;
+  text-align: center;
+  display: flex;
+}
+
+.header div,
+.task div {
+  flex: 1;
+  text-align: center;
+}
+
+.headerRow div:not(:last-child),
+.taskRow div:not(:last-child) {
+  border-right: 1px solid #fff;
+}
+
+#taskList {
+  margin-top: 20px;
+}
+
+#taskList .header {
+  display: flex;
+  align-items: center;
+  background-color: #54595e;
+  color: #fff;
+  padding: 10px;
+  border-radius: 20px;
+  font-weight: bold;
+}
+
+.edit {
+  flex: 1;
+}
+
+.editButton,
+.deleteButton {
+  width: 50px;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.editButton {
+  background-color: #007bff;
+  margin-right: 10px;
+}
+
+.deleteButton {
+  background-color: #c82333;
+  font-weight: bold;
+  margin-left: 10px;
+}
+
+.task {
+  margin-top: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 10px;
+  align-items: center;
+  font-size: 14px;
+}
+
+.title,
+.description,
+.dueDate,
+.status,
+.priority {
+  border-right: 1px solid #ccc;
+}

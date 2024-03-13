@@ -1,6 +1,6 @@
 import { DataTypes, Model, Sequelize } from 'sequelize'
 
-type OtpCodeAttributes = {
+interface OtpCodeAttributes {
   optCodeId?: number
   userId: number
   otpCode: string
@@ -28,7 +28,7 @@ export default function (sequelize: Sequelize): typeof OtpCode {
       userId: {
         type: DataTypes.INTEGER,
         references: {
-          model: 'user',
+          model: 'users',
           key: 'userId'
         },
         onDelete: 'CASCADE'

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App</title>
+    <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <span>Welcome, <%= userName %>!</span>
+            <button id="addTaskButton">Add Task</button>
+            <button id="logoutButton">Logout</button>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div id="taskList">
+                <div class="header">
+                    <div class="title">Title</div>
+                    <div class="description">Description</div>
+                    <div class="dueDate">Due Date</div>
+                    <div class="status">Status</div>
+                    <div class="priority">Priority</div>
+                    <div class="edit"></div> <!-- Thêm cột này cho nút chỉnh sửa -->
+                </div>
+                <% if (tasks.length===0) { %>
+                    <!-- Kiểm tra nếu danh sách task rỗng -->
+                    <p id="noTaskMessage">Chưa có ghi chú nào!</p>
+                    <% } else { %>
+                        <% tasks.forEach(task=> { %>
+                            <div class="task">
+                                <div class="title">
+                                    <%= task.title %>
+                                </div>
+                                <div class="description">
+                                    <%= task.description %>
+                                </div>
+                                <div class="dueDate">
+                                    <%= task.dueDate.toLocaleString() %>
+                                </div>
+                                <div class="status">
+                                    <%= task.status.name %>
+                                </div>
+                                <div class="priority">
+                                    <%= task.priority.name %>
+                                </div>
+                                <div class="edit">
+                                    <button class="editButton">Edit</button>
+                                    <i class="fa-regular fa-pen-to-square"></i>
+                                    <button class="deleteButton">X</button>
+                                </div>
+                            </div>
+                            <% }); %>
+                                <% } %>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        document.getElementById('addTaskButton').addEventListener('click', function () {
+            // Xử lý sự kiện thêm task
+            // Gửi yêu cầu API để thêm task và cập nhật giao diện sau khi thêm thành công
+            axios.post('/api/addTask', { /* Dữ liệu của task mới */ })
+                .then(function (response) {
+                    // Xử lý phản hồi từ server (nếu cần)
+                })
+                .catch(function (error) {
+                    console.error('Error:', error);
+                });
+        });
+
+        document.getElementById('logoutButton').addEventListener('click', function () {
+            // Xử lý sự kiện đăng xuất
+            // Gửi yêu cầu API để đăng xuất và chuyển hướng đến trang đăng nhập
+            axios.post('/api/logout')
+                .then(function (response) {
+                    // Chuyển hướng đến trang đăng nhập
+                    window.location.href = '/login';
+                })
+                .catch(function (error) {
+                    console.error('Error:', error);
+                });
+        });
+    </script>
+</body>
+
+</html>

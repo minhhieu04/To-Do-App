@@ -19,7 +19,7 @@ Status.hasMany(Task, { foreignKey: 'statusId' })
 Task.belongsTo(Status, { foreignKey: 'statusId' })
 
 Priority.hasMany(Task, { foreignKey: 'priorityId' })
-Task.belongsTo(Status, { foreignKey: 'priorityId' })
+Task.belongsTo(Priority, { foreignKey: 'priorityId' })
 
 User.hasMany(OtpCode, { foreignKey: 'userId' })
 OtpCode.belongsTo(User, { foreignKey: 'userId' })
