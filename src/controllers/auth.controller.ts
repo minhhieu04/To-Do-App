@@ -17,9 +17,8 @@ interface CustomSession extends session.Session {
 }
 
 export const loginController = async (req: Request<ParamsDictionary, any, LoginReqBody>, res: Response) => {
-  const { email, password } = req.body
-
   try {
+    const { email, password } = req.body
     // find user in the database by email
     const user = await User.findOne({ where: { email } })
     if (!user) {
@@ -31,12 +30,13 @@ export const loginController = async (req: Request<ParamsDictionary, any, LoginR
       return res.status(404).render('users/login', { message: 'Email or password is incorrect' })
     }
 
-    if (user.isVerified === false) {
-      return res.render('users/verify', { message: 'Please verify your account to log in' })
-    }
-
     const session = req.session as CustomSession
     session.user = user
+
+    if (user.isVerified === false) {
+      return res.redirect('/verify')
+    }
+
     res.redirect('/tasks/')
   } catch (error) {
     console.error('Login error:', error)
