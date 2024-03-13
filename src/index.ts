@@ -6,7 +6,7 @@ import { dbConnection } from './config/dbconnect'
 import session from 'express-session'
 import { config } from 'dotenv'
 import authRoutes from './routes/auth.routes'
-import { sendMail } from './utils/mailer'
+import taskRoutes from './routes/task.routes'
 
 config()
 
@@ -24,7 +24,7 @@ app.use(bodyParser.urlencoded({ extended: true }))
 
 app.use(
   session({
-    secret: 'secret',
+    secret: process.env.SESSION_SECRET as string,
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -38,6 +38,7 @@ app.use(cors(corsOptions))
 app.use(express.static(path.join('public')))
 
 app.use('/auth', authRoutes)
+app.use('/tasks', taskRoutes)
 
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'ejs')

@@ -1,6 +1,6 @@
 import { DataTypes, Model, Sequelize } from 'sequelize'
 
-type TaskAttributes = {
+interface TaskAttributes {
   taskId?: number
   userId: number
   title: string
@@ -24,16 +24,23 @@ export class Task extends Model<TaskAttributes> {
 export default function (sequelize: Sequelize): typeof Task {
   Task.init(
     {
+      taskId: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+        allowNull: true
+      },
+
       userId: {
         type: DataTypes.INTEGER,
         references: {
-          model: 'user',
+          model: 'users',
           key: 'userId'
         },
         onDelete: 'CASCADE'
       },
       title: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING(100)
       },
       description: {
         type: DataTypes.STRING
@@ -44,14 +51,14 @@ export default function (sequelize: Sequelize): typeof Task {
       statusId: {
         type: DataTypes.INTEGER,
         references: {
-          model: 'Statuses',
+          model: 'statuses',
           key: 'statusId'
         }
       },
       priorityId: {
         type: DataTypes.INTEGER,
         references: {
-          model: 'Priorities',
+          model: 'priorities',
           key: 'priorityId'
         }
       }

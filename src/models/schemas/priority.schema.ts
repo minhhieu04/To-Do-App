@@ -1,6 +1,6 @@
 import { DataTypes, Model, Sequelize } from 'sequelize'
 
-type PriorityAttributes = {
+interface PriorityAttributes {
   priorityId?: number
   name: string
 }
@@ -13,8 +13,13 @@ export class Priority extends Model<PriorityAttributes> {
 export default function (sequelize: Sequelize): typeof Priority {
   Priority.init(
     {
+      priorityId: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+      },
       name: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING(50)
       }
     },
     {
