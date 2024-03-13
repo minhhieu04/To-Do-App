@@ -37,7 +37,7 @@ export const loginController = async (req: Request<ParamsDictionary, any, LoginR
 
     const session = req.session as CustomSession
     session.user = user
-    res.redirect('task/')
+    res.redirect('/tasks/')
   } catch (error) {
     console.error('Login error:', error)
     res.status(500).render('error', { message: 'Internal server error' })

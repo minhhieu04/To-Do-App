@@ -70,7 +70,7 @@ td {
   border-bottom: 1px solid #ddd;
 }
 
-.noTaskMessage {
+#noTaskMessage {
   text-align: center;
   margin-top: 20px;
   color: #777;
