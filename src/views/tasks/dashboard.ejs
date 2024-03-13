@@ -20,18 +20,18 @@
     <main>
         <div class="container">
             <div id="taskList">
-                <div class="header">
-                    <div class="title">Title</div>
-                    <div class="description">Description</div>
-                    <div class="dueDate">Due Date</div>
-                    <div class="status">Status</div>
-                    <div class="priority">Priority</div>
-                    <div class="edit"></div> <!-- Thêm cột này cho nút chỉnh sửa -->
-                </div>
                 <% if (tasks.length===0) { %>
                     <!-- Kiểm tra nếu danh sách task rỗng -->
                     <p id="noTaskMessage">Chưa có ghi chú nào!</p>
                     <% } else { %>
+                        <div class="header">
+                            <div class="title">Title</div>
+                            <div class="description">Description</div>
+                            <div class="dueDate">Due Date</div>
+                            <div class="status">Status</div>
+                            <div class="priority">Priority</div>
+                            <div class="edit"></div> <!-- Thêm cột này cho nút chỉnh sửa -->
+                        </div>
                         <% tasks.forEach(task=> { %>
                             <div class="task">
                                 <div class="title">

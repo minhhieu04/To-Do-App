@@ -14,7 +14,7 @@ authRoutes.post('/verify', verifyController)
 authRoutes.post('/resend', resendOtpController)
 
 authRoutes.get('/login', (req, res) => {
-  res.render('users/login')
+  res.render('users/login', { message: '' })
 })
 
 authRoutes.get('/register', (req, res) => {

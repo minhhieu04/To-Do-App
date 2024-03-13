@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import { Priority, Status, Task, User } from '../models/schemas'
 import session from 'express-session'
 import { User as UserSchema } from '~/models/schemas/user.schema'
+import { set } from 'lodash'
 
 interface CustomSession extends session.Session {
   user?: UserSchema
@@ -9,8 +10,11 @@ interface CustomSession extends session.Session {
 
 export const getAllTasks = async (req: Request, res: Response) => {
   try {
-    const userId = (req.session as CustomSession).user?.userId || 13
-    if (!userId) return res.status(400).json({ message: 'User not authenticated' })
+    const userId = (req.session as CustomSession).user?.userId
+
+    if (!userId) {
+      return res.redirect('/auth/login')
+    }
 
     // get all tasks
     const tasks = await Task.findAll({
@@ -20,9 +24,9 @@ export const getAllTasks = async (req: Request, res: Response) => {
         { model: Priority, attributes: ['name'] }
       ]
     })
-    if (!tasks || tasks.length === 0) {
-      return res.status(200).json({ message: 'No tasks found for this user' })
-    }
+    // if (!tasks || tasks.length === 0) {
+    //   return res.render('tasks/dashboard', { tasks })
+    // }
 
     res.render('tasks/dashboard', { userName: (req.session as CustomSession).user?.name || 'Superman', tasks })
   } catch (error) {
