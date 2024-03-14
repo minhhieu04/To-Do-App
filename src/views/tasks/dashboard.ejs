@@ -76,12 +76,10 @@
         });
 
         document.getElementById('logoutButton').addEventListener('click', function () {
-            // Xử lý sự kiện đăng xuất
-            // Gửi yêu cầu API để đăng xuất và chuyển hướng đến trang đăng nhập
-            axios.post('/api/logout')
+            axios.post('/auth/logout')
                 .then(function (response) {
                     // Chuyển hướng đến trang đăng nhập
-                    window.location.href = '/login';
+                    window.location.href = '/auth/login';
                 })
                 .catch(function (error) {
                     console.error('Error:', error);

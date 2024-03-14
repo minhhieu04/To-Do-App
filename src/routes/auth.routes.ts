@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import {
   loginController,
+  logoutController,
   registerController,
   resendOtpController,
   verifyController
@@ -12,6 +13,7 @@ authRoutes.post('/login', loginController)
 authRoutes.post('/register', registerController)
 authRoutes.post('/verify', verifyController)
 authRoutes.post('/resend', resendOtpController)
+authRoutes.post('/logout', logoutController)
 
 authRoutes.get('/login', (req, res) => {
   res.render('users/login', { message: '' })
