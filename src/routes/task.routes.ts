@@ -1,8 +1,9 @@
 import { Router } from 'express'
-import { getAllTasks } from '~/controllers/task.controller'
+import { getAllTasksController, addTaskController } from '~/controllers/task.controller'
 
 const taskRoutes = Router()
 
-taskRoutes.get('/', getAllTasks)
+taskRoutes.get('/', getAllTasksController)
+taskRoutes.post('/add-task', addTaskController)
 
 export default taskRoutes

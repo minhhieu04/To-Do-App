@@ -17,6 +17,37 @@
         </div>
     </header>
 
+    <!-- Modal -->
+    <div id="addTaskModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Add Task</h2>
+            <!-- Form to add task -->
+            <form id="addTaskForm">
+                <label for="title">Title:</label>
+                <input type="text" id="title" name="title" required><br><br>
+                <label for="description">Description:</label>
+                <textarea id="description" name="description" rows="1" cols="50" required></textarea><br><br>
+                <label for="dueDate">Due Date:</label>
+                <input type="datetime-local" id="dueDate" name="dueDate" required><br><br>
+                <label for="status">Status:</label>
+                <select id="status" name="statusId" required>
+                    <option value="1">To Do</option>
+                    <option value="2">In Progress</option>
+                    <option value="3">Completed</option>
+                    <option value="4">Closed</option>
+                </select><br><br>
+                <label for="priority">Priority:</label>
+                <select id="priority" name="priorityId" required>
+                    <option value="1">Low</option>
+                    <option value="2">Medium</option>
+                    <option value="3">High</option>
+                </select><br><br>
+                <button type="submit">Add</button>
+            </form>
+        </div>
+    </div>
+
     <main>
         <div class="container">
             <div id="taskList">
@@ -61,14 +92,50 @@
         </div>
     </main>
 
+
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
-        document.getElementById('addTaskButton').addEventListener('click', function () {
-            // Xử lý sự kiện thêm task
-            // Gửi yêu cầu API để thêm task và cập nhật giao diện sau khi thêm thành công
-            axios.post('/api/addTask', { /* Dữ liệu của task mới */ })
+
+        const modal = document.getElementById('addTaskModal');
+
+        const addTaskBtn = document.getElementById("addTaskButton");
+
+        const closeBtn = document.getElementsByClassName("close")[0];
+
+        addTaskBtn.onclick = function () {
+            modal.style.display = "block";
+        }
+
+        closeBtn.onclick = function () {
+            modal.style.display = "none";
+        }
+
+
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        document.getElementById('addTaskForm').addEventListener('submit', function (event) {
+            event.preventDefault(); // Ngăn chặn submit mặc định
+
+            // Lấy giá trị của các trường input
+            const title = document.getElementById("title").value;
+
+            const description = document.getElementById("description").value;
+            const dueDate = document.getElementById("dueDate").value;
+            const statusId = document.getElementById("status").value;
+            const priorityId = document.getElementById("priority").value;
+            console.log({ title, description, dueDate, statusId, priorityId })
+            const taskData = { title, description, dueDate, statusId, priorityId }
+
+            axios.post('/tasks/add-task', taskData)
                 .then(function (response) {
-                    // Xử lý phản hồi từ server (nếu cần)
+                    // Đóng modal sau khi thêm task thành công
+                    modal.style.display = "none";
+                    // Refresh trang
+                    window.location.reload();
                 })
                 .catch(function (error) {
                     console.error('Error:', error);
@@ -78,7 +145,7 @@
         document.getElementById('logoutButton').addEventListener('click', function () {
             axios.post('/auth/logout')
                 .then(function (response) {
-                    // Chuyển hướng đến trang đăng nhập
+                    // Redirect to login page
                     window.location.href = '/auth/login';
                 })
                 .catch(function (error) {
