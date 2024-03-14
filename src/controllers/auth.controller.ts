@@ -158,3 +158,22 @@ export const resendOtpController = async (req: Request<ParamsDictionary, any, Re
     res.status(500).render('error', { message: 'Internal server error' })
   }
 }
+
+export const logoutController = async (req: Request, res: Response) => {
+  try {
+    if (!(req.session as CustomSession).user) {
+      return res.render('error', { message: 'User is not logged in' })
+    }
+    // remove the session
+    ;(req.session as CustomSession).destroy((err) => {
+      if (err) {
+        console.error('Error destroying session:', err)
+        return res.status(500).render('error', { message: 'Failed to logout' })
+      }
+      return res.redirect('/auth/login')
+    })
+  } catch (error) {
+    console.error('Logout error:', error)
+    res.status(500).render('error', { message: 'Failed to logout' })
+  }
+}

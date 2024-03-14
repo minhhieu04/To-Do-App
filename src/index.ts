@@ -19,9 +19,8 @@ const corsOptions: CorsOptions = {
 const PORT = process.env.PORT || 3000
 
 express.json({})
-// Sử dụng body-parser để lấy dữ liệu từ form
-app.use(bodyParser.urlencoded({ extended: true }))
 
+app.use(bodyParser.urlencoded({ extended: true }))
 app.use(
   session({
     secret: process.env.SESSION_SECRET as string,
