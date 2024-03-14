@@ -39,6 +39,10 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+      },
+      avatar: {
+        allowNull: true,
+        type: Sequelize.STRING
       }
     })
   },
