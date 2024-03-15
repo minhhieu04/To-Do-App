@@ -17,10 +17,10 @@
         </div>
     </header>
 
-    <!-- Modal -->
+    <!-- Modal add task form -->
     <div id="addTaskModal" class="modal">
         <div class="modal-content">
-            <span class="close">&times;</span>
+            <span class="close" id="closeAddTask">&times;</span>
             <h2>Add Task</h2>
             <!-- Form to add task -->
             <form id="addTaskForm">
@@ -47,6 +47,37 @@
             </form>
         </div>
     </div>
+    <!-- Modal edit task -->
+    <div id="editTaskModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeEditTask">&times;</span>
+            <h2>Edit Task</h2>
+            <!-- Form edit a task -->
+            <form id="editTaskForm">
+                <label for="editTitle">Title:</label>
+                <input type="text" id="editTitle" name="editTitle" required><br><br>
+                <label for="editDescription">Description:</label>
+                <textarea id="editDescription" name="editDescription" rows="1" cols="50" required></textarea><br><br>
+                <label for="editDueDate">Due Date:</label>
+                <input type="datetime-local" id="editDueDate" name="editDueDate" required><br><br>
+                <label for="editStatus">Status:</label>
+                <select id="editStatus" name="editStatusId" required>
+                    <option value="1">To Do</option>
+                    <option value="2">In Progress</option>
+                    <option value="3">Completed</option>
+                    <option value="4">Closed</option>
+                </select><br><br>
+                <label for="editPriority">Priority:</label>
+                <select id="editPriority" name="editPriorityId" required>
+                    <option value="1">Low</option>
+                    <option value="2">Medium</option>
+                    <option value="3">High</option>
+                </select><br><br>
+                <button type="submit">Save</button>
+            </form>
+        </div>
+    </div>
+
 
     <main>
         <div class="container">
@@ -61,7 +92,7 @@
                             <div class="dueDate">Due Date</div>
                             <div class="status">Status</div>
                             <div class="priority">Priority</div>
-                            <div class="edit"></div> <!-- Thêm cột này cho nút chỉnh sửa -->
+                            <div class="action">Action</div> <!-- Thêm cột này cho nút chỉnh sửa -->
                         </div>
                         <% tasks.forEach(task=> { %>
                             <div class="task">
@@ -81,7 +112,9 @@
                                     <%= task.priority.name %>
                                 </div>
                                 <div class="edit">
-                                    <button class="editButton">Edit</button>
+                                    <button class="editButton" data-task-id="<%= task.taskId %>"
+                                        data-priority-id="<%= task.priorityId %>"
+                                        data-status-id="<%= task.statusId %>">Edit</button>
                                     <i class="fa-regular fa-pen-to-square"></i>
                                     <button class="deleteButton">X</button>
                                 </div>
@@ -96,24 +129,30 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
 
-        const modal = document.getElementById('addTaskModal');
-
+        const addTaskModal = document.getElementById('addTaskModal');
+        const editTaskModal = document.getElementById('editTaskModal');
         const addTaskBtn = document.getElementById("addTaskButton");
-
-        const closeBtn = document.getElementsByClassName("close")[0];
+        const closeAddTaskBtn = document.getElementById("closeAddTask");
+        const closeEditTaskBtn = document.getElementById("closeEditTask");
 
         addTaskBtn.onclick = function () {
-            modal.style.display = "block";
+            addTaskModal.style.display = "block";
         }
 
-        closeBtn.onclick = function () {
-            modal.style.display = "none";
+        closeAddTaskBtn.onclick = function () {
+            addTaskModal.style.display = "none";
         }
 
+        closeEditTaskBtn.onclick = function () {
+            editTaskModal.style.display = "none";
+        }
 
         window.onclick = function (event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
+            if (event.target == addTaskModal) {
+                addTaskModal.style.display = "none";
+            }
+            if (event.target == editTaskModal) {
+                editTaskModal.style.display = "none";
             }
         }
 
@@ -122,18 +161,17 @@
 
             // Lấy giá trị của các trường input
             const title = document.getElementById("title").value;
-
             const description = document.getElementById("description").value;
             const dueDate = document.getElementById("dueDate").value;
             const statusId = document.getElementById("status").value;
             const priorityId = document.getElementById("priority").value;
-            console.log({ title, description, dueDate, statusId, priorityId })
             const taskData = { title, description, dueDate, statusId, priorityId }
 
             axios.post('/tasks/add-task', taskData)
                 .then(function (response) {
+
                     // Đóng modal sau khi thêm task thành công
-                    modal.style.display = "none";
+                    addTaskModal.style.display = "none";
                     // Refresh trang
                     window.location.reload();
                 })
@@ -147,6 +185,81 @@
                 .then(function (response) {
                     // Redirect to login page
                     window.location.href = '/auth/login';
+                })
+                .catch(function (error) {
+                    console.error('Error:', error);
+                });
+        });
+
+        // Lắng nghe sự kiện click vào button edit của mỗi task
+        document.querySelectorAll('.editButton').forEach(function (editBtn) {
+            editBtn.addEventListener('click', function () {
+
+                function formatDateTimeForInput(dateTime) {
+                    const isoDateTime = dateTime.toISOString(); // Chuyển đổi sang định dạng ISO 8601 (UTC)
+                    const localDateTime = new Date(dateTime.getTime() - (dateTime.getTimezoneOffset() * 60000)); // Chuyển múi giờ về cục bộ
+                    return localDateTime.toISOString().slice(0, 16); // Trả về định dạng ISO 8601 cục bộ (không bao gồm giây) // Cắt bớt phần thừa
+                }
+                // Lấy thông tin của task từ các phần tử HTML tương ứng
+                const taskElement = this.closest('.task');
+                const taskId = this.dataset.taskId;
+                const title = taskElement.querySelector('.title').innerText;
+                const description = taskElement.querySelector('.description').innerText;
+                const date = new Date(taskElement.querySelector('.dueDate').innerText);
+                const dueDate = formatDateTimeForInput(date)
+                const statusId = this.dataset.statusId;
+                const priorityId = this.dataset.priorityId;
+
+                // Hiển thị modal chỉnh sửa task với thông tin của task được chọn
+                displayEditModal(taskId, title, description, dueDate, statusId, priorityId);
+            });
+        });
+
+
+        // Hàm hiển thị modal chỉnh sửa task
+        function displayEditModal(taskId, title, description, dueDate, status, priority) {
+            // Hiển thị modal chỉnh sửa
+            editTaskModal.style.display = 'block';
+
+            // Gán giá trị taskId vào dataset của form
+            document.getElementById('editTaskForm').dataset.taskId = taskId;
+
+            // Đổ dữ liệu của task vào các trường input trong form chỉnh sửa
+            document.getElementById('editTitle').value = title;
+            document.getElementById('editDescription').value = description;
+            document.getElementById('editDueDate').value = dueDate;
+            document.getElementById('editStatus').value = status;
+            document.getElementById('editPriority').value = priority;
+        }
+
+        // Lắng nghe sự kiện submit của form chỉnh sửa task
+        document.getElementById('editTaskForm').addEventListener('submit', function (event) {
+            event.preventDefault(); // Ngăn chặn submit mặc định của form
+
+            const taskId = this.dataset.taskId;
+            const title = document.getElementById('editTitle').value;
+            const description = document.getElementById('editDescription').value;
+            const dueDate = document.getElementById('editDueDate').value;
+            const statusId = document.getElementById('editStatus').value;
+            const priorityId = document.getElementById('editPriority').value;
+
+            const taskData = { taskId, title, description, dueDate, statusId, priorityId }
+
+            //  Cập nhật thông tin task
+            axios.put('/tasks/' + taskId, {
+                title,
+                description,
+                dueDate,
+                statusId,
+                priorityId
+            })
+                .then(function (response) {
+                    // Đóng modal chỉnh sửa task sau khi cập nhật thành công
+                    const editModal = document.getElementById('editTaskModal');
+                    editModal.style.display = 'none';
+
+                    // Refresh trang để hiển thị thông tin task đã được cập nhật
+                    window.location.reload();
                 })
                 .catch(function (error) {
                     console.error('Error:', error);
