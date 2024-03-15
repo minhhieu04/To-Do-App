@@ -5,3 +5,5 @@ export interface AddTaskReqBody {
   statusId: number
   priorityId: number
 }
+
+export interface EditTaskReqBody extends AddTaskReqBody {}

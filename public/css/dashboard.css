@@ -130,7 +130,8 @@ header .container {
 }
 
 /* The Modal  */
-.modal {
+#addTaskModal,
+#editTaskModal {
   display: none;
   position: fixed;
   z-index: 1;
@@ -178,10 +179,6 @@ form {
 
 h2 {
   text-align: center;
-}
-
-label {
-  margin-bottom: 5px;
 }
 
 input[type='text'],

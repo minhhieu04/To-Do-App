@@ -5,7 +5,7 @@ import { User as UserSchema } from '~/models/schemas/user.schema'
 import { Task as TaskSchema } from '~/models/schemas/task.schema'
 import taskSchema from '~/models/schemas/task.schema'
 import { ParamsDictionary } from 'express-serve-static-core'
-import { AddTaskReqBody } from '~/models/request/task.requests'
+import { AddTaskReqBody, EditTaskReqBody } from '~/models/request/task.requests'
 
 interface CustomSession extends session.Session {
   user?: UserSchema
@@ -59,6 +59,48 @@ export const addTaskController = async (req: Request<ParamsDictionary, any, AddT
     res.status(201).json({ message: 'Task created successfully', task: newTask })
   } catch (error) {
     console.error('Error creating task:', error)
+    res.status(500).render('error', { message: 'Internal server error' })
+  }
+}
+
+export const getTaskController = async (req: Request, res: Response) => {
+  try {
+    const { taskId } = req.params
+    const task = await Task.findByPk(taskId, {
+      include: [
+        { model: Status, attributes: ['name'] },
+        { model: Priority, attributes: ['name'] }
+      ]
+    })
+    res.status(200).json({ task: task })
+  } catch (error) {
+    console.error('Error get task:', error)
+    res.status(500).render('error', { message: 'Internal server error' })
+  }
+}
+
+export const editTaskController = async (req: Request<ParamsDictionary, any, EditTaskReqBody>, res: Response) => {
+  try {
+    const { taskId } = req.params
+    const { title, description, dueDate, statusId, priorityId } = req.body
+    if (!taskId) {
+      return res.status(400).json({ error: 'Task ID is required' })
+    }
+    const task = await Task.findByPk(taskId)
+    if (!task) {
+      return res.status(404).json({ error: 'Task not found' })
+    }
+
+    task.title = title || task.title
+    task.description = description || task.description
+    task.dueDate = dueDate || task.dueDate
+    task.statusId = statusId || task.statusId
+    task.priorityId = priorityId || task.priorityId
+
+    await task.save()
+    res.status(200).json({ message: 'Task updated successfully', task })
+  } catch (error) {
+    console.error('Error edit task:', error)
     res.status(500).render('error', { message: 'Internal server error' })
   }
 }
