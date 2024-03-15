@@ -104,3 +104,28 @@ export const editTaskController = async (req: Request<ParamsDictionary, any, Edi
     res.status(500).render('error', { message: 'Internal server error' })
   }
 }
+
+export const deleteTaskController = async (req: Request, res: Response) => {
+  try {
+    const { taskId } = req.params
+    const userId = (req.session as CustomSession).user?.userId
+
+    const taskToDelete = await Task.findByPk(taskId)
+
+    if (!taskToDelete) {
+      return res.status(404).json({ message: 'Task not found' })
+    }
+
+    // Check if the task belongs to the current user
+    if (taskToDelete.userId !== userId) {
+      return res.status(403).json({ message: 'You are not authorized to delete this task' })
+    }
+
+    await taskToDelete.destroy()
+
+    res.status(200).json({ message: 'Task deleted successfully' })
+  } catch (error) {
+    console.error('Error delete task:', error)
+    res.status(500).render('error', { message: 'Internal server error' })
+  }
+}
