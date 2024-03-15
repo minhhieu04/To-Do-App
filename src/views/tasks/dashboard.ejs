@@ -116,7 +116,7 @@
                                         data-priority-id="<%= task.priorityId %>"
                                         data-status-id="<%= task.statusId %>">Edit</button>
                                     <i class="fa-regular fa-pen-to-square"></i>
-                                    <button class="deleteButton">X</button>
+                                    <button class="deleteButton" data-task-id="<%= task.taskId %>">X</button>
                                 </div>
                             </div>
                             <% }); %>
@@ -126,7 +126,7 @@
     </main>
 
 
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src=" https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
 
         const addTaskModal = document.getElementById('addTaskModal');
@@ -169,6 +169,7 @@
 
             axios.post('/tasks/add-task', taskData)
                 .then(function (response) {
+                    alert('Task added successfully')
 
                     // Đóng modal sau khi thêm task thành công
                     addTaskModal.style.display = "none";
@@ -257,13 +258,27 @@
                     // Đóng modal chỉnh sửa task sau khi cập nhật thành công
                     const editModal = document.getElementById('editTaskModal');
                     editModal.style.display = 'none';
-
+                    alert('Updated task')
                     // Refresh trang để hiển thị thông tin task đã được cập nhật
                     window.location.reload();
                 })
                 .catch(function (error) {
                     console.error('Error:', error);
                 });
+        });
+
+        document.querySelectorAll('.deleteButton').forEach(deleteBtn => {
+            deleteBtn.addEventListener('click', function () {
+                const taskId = this.dataset.taskId;
+                axios.delete(`/tasks/${taskId}`)
+                    .then(function (response) {
+                        alert('Task deleted successfully')
+                        window.location.reload();
+                    })
+                    .catch(function (error) {
+                        console.error('Error:', error);
+                    })
+            })
         });
     </script>
 </body>
