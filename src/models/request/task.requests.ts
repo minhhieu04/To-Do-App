@@ -7,3 +7,7 @@ export interface AddTaskReqBody {
 }
 
 export interface EditTaskReqBody extends AddTaskReqBody {}
+
+export interface Pagination {
+  page: string
+}

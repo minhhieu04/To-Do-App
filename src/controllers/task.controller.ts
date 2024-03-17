@@ -5,13 +5,16 @@ import { User as UserSchema } from '~/models/schemas/user.schema'
 import { Task as TaskSchema } from '~/models/schemas/task.schema'
 import taskSchema from '~/models/schemas/task.schema'
 import { ParamsDictionary } from 'express-serve-static-core'
-import { AddTaskReqBody, EditTaskReqBody } from '~/models/request/task.requests'
+import { AddTaskReqBody, EditTaskReqBody, Pagination } from '~/models/request/task.requests'
+import { calculateOffsetAndLimit } from '~/utils/caculations'
 
 interface CustomSession extends session.Session {
   user?: UserSchema
 }
 
-export const getAllTasksController = async (req: Request, res: Response) => {
+const PAGE_SIZE = 6
+
+export const getAllTasksController = async (req: Request<ParamsDictionary, any, any, Pagination>, res: Response) => {
   try {
     const userId = (req.session as CustomSession).user?.userId
 
@@ -19,19 +22,30 @@ export const getAllTasksController = async (req: Request, res: Response) => {
       return res.redirect('/auth/login')
     }
 
+    const page = req.query.page ? parseInt(req.query.page as string) : 1
+
+    const { offset, limit } = calculateOffsetAndLimit(page, PAGE_SIZE)
     // get all tasks
     const tasks = await Task.findAll({
       where: { userId },
       include: [
         { model: Status, attributes: ['name'] },
         { model: Priority, attributes: ['name'] }
-      ]
+      ],
+      offset,
+      limit
     })
-    // if (!tasks || tasks.length === 0) {
-    //   return res.render('tasks/dashboard', { tasks })
-    // }
 
-    res.render('tasks/dashboard', { userName: (req.session as CustomSession).user?.name || 'Superman', tasks })
+    // calculate the number of pages
+    const totalTasks: number = await Task.count({ where: { userId } })
+    const totalPages = Math.ceil(totalTasks / PAGE_SIZE)
+
+    res.render('tasks/dashboard', {
+      userName: (req.session as CustomSession).user?.name || 'Superman',
+      tasks,
+      totalPages,
+      currentPage: page
+    })
   } catch (error) {
     console.error('Error fetching tasks:', error)
     res.status(500).render('error', { message: 'Internal server error' })
