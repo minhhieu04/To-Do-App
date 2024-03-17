@@ -8,7 +8,8 @@ main {
   padding: 20px 0;
 }
 
-.container {
+.headerContainer,
+.bodyContainer {
   width: 80%;
   margin: 0 auto;
 }
@@ -40,7 +41,7 @@ header button {
   background-color: #c82333;
 }
 
-header .container {
+.headerContainer {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -75,6 +76,7 @@ header .container {
 
 #taskList {
   margin-top: 20px;
+  height: 500px;
 }
 
 #taskList .header {
@@ -130,11 +132,12 @@ header .container {
 }
 
 /* The Modal  */
+.formModal,
 #addTaskModal,
 #editTaskModal {
   display: none;
   position: fixed;
-  z-index: 1;
+  z-index: 4;
   left: 0;
   top: 0;
   width: 100%;
@@ -144,7 +147,7 @@ header .container {
 }
 
 /* Modal content */
-.modal-content {
+.modalContent {
   background-color: #fefefe;
   margin: 2% auto;
   padding: 15px;
@@ -181,6 +184,10 @@ h2 {
   text-align: center;
 }
 
+label {
+  margin-bottom: 5px;
+}
+
 input[type='text'],
 textarea,
 select,
@@ -198,11 +205,24 @@ button[type='submit'] {
   color: #fff;
   padding: 8px 16px;
   border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  align-items: center;
+  border-radius: 5px;
+  margin-top: 50px;
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 button[type='submit']:hover {
   background-color: #0056b3;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  z-index: 2;
+}
+
+.pagination .page-item {
+  margin-right: 8px; /* Khoảng cách giữa các nút */
 }
