@@ -89,13 +89,68 @@
                     <!-- Kiểm tra nếu danh sách task rỗng -->
                     <p id="noTaskMessage">Chưa có ghi chú nào!</p>
                     <% } else { %>
-                        <div class="header">
-                            <div class="title">Title</div>
-                            <div class="description">Description</div>
-                            <div class="dueDate">Due Date</div>
-                            <div class="status">Status</div>
-                            <div class="priority">Priority</div>
-                            <div class="action">Action</div> <!-- Thêm cột này cho nút chỉnh sửa -->
+                        <div class="headerBody">
+                            <div class="dropdown">
+                                <a class="btn btn-secondary dropdown-toggle title" href="#" role="button"
+                                    id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Title
+                                </a>
+
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                    <li><a class="dropdown-item" href="#">A-Z</a></li>
+                                    <li><a class="dropdown-item" href="#">Z-A</a></li>
+                                </ul>
+                            </div>
+                            <div class="dropdown">
+                                <a class="btn btn-secondary dropdown-toggle description" href="#" role="button"
+                                    id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Description
+                                </a>
+
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                    <li><a class="dropdown-item" href="#">A-Z</a></li>
+                                    <li><a class="dropdown-item" href="#">Z-A</a></li>
+                                </ul>
+                            </div>
+                            <div class="dropdown">
+                                <a class="btn btn-secondary dropdown-toggle dueDate" href="#" role="button"
+                                    id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Due Date
+                                </a>
+
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                    <li><a class="dropdown-item" href="#">Newest</a></li>
+                                    <li><a class="dropdown-item" href="#">Oldest</a></li>
+                                </ul>
+                            </div>
+                            <div class="dropdown">
+                                <a class="btn btn-secondary dropdown-toggle status" href="#" role="button"
+                                    id="statusDropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Status
+                                </a>
+
+                                <ul class="dropdown-menu" aria-labelledby="statusDropdownMenuLink">
+                                    <li><a class="dropdown-item" href="#" data-value="1">Todo</a></li>
+                                    <li><a class="dropdown-item" href="#" data-value="2">In Progress</a></li>
+                                    <li><a class="dropdown-item" href="#" data-value="3">Completed</a></li>
+                                    <li><a class="dropdown-item" href="#" data-value="4">Closed</a></li>
+                                </ul>
+                            </div>
+
+                            <!-- Priority dropdown -->
+                            <div class="dropdown">
+                                <a class="btn btn-secondary dropdown-toggle priority" href="#" role="button"
+                                    id="priorityDropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Priority
+                                </a>
+
+                                <ul class="dropdown-menu" aria-labelledby="priorityDropdownMenuLink">
+                                    <li><a class="dropdown-item" href="#" data-value="1">Low</a></li>
+                                    <li><a class="dropdown-item" href="#" data-value="2">Medium</a></li>
+                                    <li><a class="dropdown-item" href="#" data-value="3">High</a></li>
+                                </ul>
+                            </div>
+                            <div class="action">Action</div>
                         </div>
                         <% tasks.forEach(task=> { %>
                             <div class="task">
@@ -308,6 +363,28 @@
                     })
             })
         });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const dropdowns = document.querySelectorAll('.dropdown-menu');
+
+            dropdowns.forEach(dropdown => {
+                dropdown.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    const selectedItem = event.target.textContent;
+                    const columnName = this.closest('.dropdown').querySelector('.dropdown-toggle').textContent.trim().toLowerCase();
+
+                    // Gửi request đến server với các thông tin filter và sort đã chọn
+                    const queryParams = new URLSearchParams(window.location.search);
+                    queryParams.set('sortColumn', columnName);
+                    queryParams.s
+                    // queryParams.set('sortOrder', selectedItem === 'A-Z' || selectedItem === 'Newest' ? 'ASC' : 'DESC');
+
+                    window.location.href = `${window.location.pathname}?${queryParams.toString()}`;
+                });
+            });
+        });
+
+
 
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"

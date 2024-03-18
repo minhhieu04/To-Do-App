@@ -9,5 +9,10 @@ export interface AddTaskReqBody {
 export interface EditTaskReqBody extends AddTaskReqBody {}
 
 export interface Pagination {
-  page: string
+  page?: number
+  alphabetFilter?: string
+  sortColumn?: string
+  sortOrder?: 'ASC' | 'DESC'
+  statusFilter?: number
+  priorityFilter?: number
 }
