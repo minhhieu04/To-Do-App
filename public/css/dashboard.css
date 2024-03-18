@@ -56,14 +56,14 @@ header button {
   padding: 10px;
 }
 
-.header,
+.headerBody,
 .task {
   flex: 1;
   text-align: center;
   display: flex;
 }
 
-.header div,
+.headerBody div,
 .task div {
   flex: 1;
   text-align: center;
@@ -79,7 +79,7 @@ header button {
   height: 500px;
 }
 
-#taskList .header {
+#taskList .headerBody {
   display: flex;
   align-items: center;
   background-color: #54595e;
@@ -225,4 +225,10 @@ button[type='submit']:hover {
 
 .pagination .page-item {
   margin-right: 8px; /* Khoảng cách giữa các nút */
+}
+
+.btn-secondary {
+  font-weight: bold !important;
+  background-color: #54595e !important;
+  border-color: #54595e !important;
 }
