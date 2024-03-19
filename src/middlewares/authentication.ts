@@ -13,9 +13,7 @@ export const checkLogin = (req: Request, res: Response, next: NextFunction) => {
 }
 
 export const checkLogged = (req: Request, res: Response, next: NextFunction) => {
-  console.log('đã chạy tới đây')
   const session = req.session as CustomSession
-  console.log(session)
   if (session.user) {
     return res.redirect('/tasks/')
   } else {
