@@ -19,9 +19,6 @@ export const getAllTasksController = async (req: Request<ParamsDictionary, any, 
   try {
     const userId = (req.session as CustomSession).user?.userId
 
-    if (!userId) {
-      return res.redirect('/auth/login')
-    }
     const page = req.query.page ? req.query.page : 1
     const alphabetFilter = req.query.alphabetFilter ? (req.query.alphabetFilter as string).toUpperCase() : null
     const sortColumn = req.query.sortColumn || 'dueDate'
@@ -107,11 +104,8 @@ export const getAllTasksController = async (req: Request<ParamsDictionary, any, 
 
 export const addTaskController = async (req: Request<ParamsDictionary, any, AddTaskReqBody>, res: Response) => {
   try {
-    const userId = (req.session as CustomSession).user?.userId
+    const userId = (req.session as CustomSession).user?.userId as number
 
-    if (!userId) {
-      return res.redirect('/auth/login')
-    }
     const { title, description, dueDate, statusId, priorityId } = req.body
 
     const newTask = new TaskSchema({
