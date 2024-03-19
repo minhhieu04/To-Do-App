@@ -6,20 +6,21 @@ import {
   resendOtpController,
   verifyController
 } from '~/controllers/auth.controller'
+import { checkLogged } from '~/middlewares/authentication'
 
 const authRoutes = Router()
 
-authRoutes.post('/login', loginController)
-authRoutes.post('/register', registerController)
+authRoutes.post('/login', checkLogged, loginController)
+authRoutes.post('/register', checkLogged, registerController)
 authRoutes.post('/verify', verifyController)
 authRoutes.post('/resend', resendOtpController)
 authRoutes.post('/logout', logoutController)
 
-authRoutes.get('/login', (req, res) => {
+authRoutes.get('/login', checkLogged, (req, res) => {
   res.render('users/login', { message: '' })
 })
 
-authRoutes.get('/register', (req, res) => {
+authRoutes.get('/register', checkLogged, (req, res) => {
   res.render('users/register', { message: '' })
 })
 
