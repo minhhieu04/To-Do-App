@@ -84,6 +84,10 @@
 
     <main>
         <div class="bodyContainer">
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search...">
+                <button id="searchButton">Find</button>
+            </div>
             <div id="taskList">
                 <% if (tasks.length===0) { %>
                     <!-- Kiểm tra nếu danh sách task rỗng -->
@@ -130,10 +134,10 @@
                                 </a>
 
                                 <ul class="dropdown-menu" aria-labelledby="statusDropdownMenuLink">
-                                    <li><a class="dropdown-item" href="#" data-value="1">Todo</a></li>
-                                    <li><a class="dropdown-item" href="#" data-value="2">In Progress</a></li>
-                                    <li><a class="dropdown-item" href="#" data-value="3">Completed</a></li>
-                                    <li><a class="dropdown-item" href="#" data-value="4">Closed</a></li>
+                                    <li><a class="dropdown-item" href="#" dataValue="1">Todo</a></li>
+                                    <li><a class="dropdown-item" href="#" dataValue="2">In Progress</a></li>
+                                    <li><a class="dropdown-item" href="#" dataValue="3">Completed</a></li>
+                                    <li><a class="dropdown-item" href="#" dataValue="4">Closed</a></li>
                                 </ul>
                             </div>
 
@@ -145,9 +149,9 @@
                                 </a>
 
                                 <ul class="dropdown-menu" aria-labelledby="priorityDropdownMenuLink">
-                                    <li><a class="dropdown-item" href="#" data-value="1">Low</a></li>
-                                    <li><a class="dropdown-item" href="#" data-value="2">Medium</a></li>
-                                    <li><a class="dropdown-item" href="#" data-value="3">High</a></li>
+                                    <li><a class="dropdown-item" href="#" dataValue="1">Low</a></li>
+                                    <li><a class="dropdown-item" href="#" dataValue="2">Medium</a></li>
+                                    <li><a class="dropdown-item" href="#" dataValue="3">High</a></li>
                                 </ul>
                             </div>
                             <div class="action">Action</div>
@@ -370,20 +374,46 @@
             dropdowns.forEach(dropdown => {
                 dropdown.addEventListener('click', function (event) {
                     event.preventDefault();
-                    const selectedItem = event.target.textContent;
+                    // const selectedItem = event.target.getAttribute('dataValue')
+                    const selectedItem = event.target.textContent
+                    console.log(selectedItem)
                     const columnName = this.closest('.dropdown').querySelector('.dropdown-toggle').textContent.trim().toLowerCase();
 
                     // Gửi request đến server với các thông tin filter và sort đã chọn
                     const queryParams = new URLSearchParams(window.location.search);
                     queryParams.set('sortColumn', columnName);
-                    queryParams.s
-                    // queryParams.set('sortOrder', selectedItem === 'A-Z' || selectedItem === 'Newest' ? 'ASC' : 'DESC');
+                    queryParams.set('sortOrder', selectedItem === 'A-Z' || selectedItem === 'Newest' ? 'ASC' : 'DESC');
 
                     window.location.href = `${window.location.pathname}?${queryParams.toString()}`;
                 });
             });
         });
 
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchButton = document.getElementById('searchButton');
+            const searchInput = document.getElementById('searchInput');
+
+            searchButton.addEventListener('click', function () {
+                search();
+            });
+
+            searchInput.addEventListener('keypress', function (event) {
+                if (event.keyCode === 13) {
+                    search();
+                }
+            });
+
+
+            const search = () => {
+                const searchQuery = searchInput.value.trim();
+
+                if (searchQuery !== '') {
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('search', searchQuery);
+                    window.location.href = url.href;
+                }
+            }
+        });
 
 
     </script>
