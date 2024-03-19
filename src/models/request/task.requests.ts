@@ -15,4 +15,5 @@ export interface Pagination {
   sortOrder?: 'ASC' | 'DESC'
   statusFilter?: number
   priorityFilter?: number
+  search?: string
 }
