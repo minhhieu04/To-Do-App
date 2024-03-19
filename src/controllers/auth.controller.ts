@@ -9,8 +9,9 @@ import moment from 'moment'
 import fs from 'fs'
 import path from 'path'
 import ejs from 'ejs'
-import { sendMail } from '~/utils/mailer'
+import { saveOtpAndSendEmail } from '~/utils/mailer'
 import { Op } from 'sequelize'
+import { generateCode } from '~/utils/generates'
 
 interface CustomSession extends session.Session {
   user?: UserSchema
@@ -44,7 +45,7 @@ export const loginController = async (req: Request<ParamsDictionary, any, LoginR
   }
 }
 
-export const registerController = async (req: Request<ParamsDictionary, any, RegisterReqBody>, res: Response) => {
+export const registerController = async (req: Request, res: Response) => {
   const { name, password, email } = req.body
 
   try {
@@ -56,34 +57,10 @@ export const registerController = async (req: Request<ParamsDictionary, any, Reg
 
     const hashedPassword = await bcrypt.hash(password, 10)
 
-    const randomOTPCode = Math.floor(100000 + Math.random() * 900000).toString()
-
     const newUser = await User.create({ name, password: hashedPassword, email })
 
-    // save otp in database
-    const otpExpirationTime = moment().add(1, 'days').toDate()
-    await OtpCode.create({
-      userId: newUser.userId,
-      otpCode: randomOTPCode,
-      expiresAt: otpExpirationTime
-    })
+    await saveOtpAndSendEmail(newUser.userId, email)
 
-    // Send otp to user
-    const templatePath = path.resolve('src/views/users/sendOTP.ejs')
-    const templateContent = fs.readFileSync(templatePath, 'utf8')
-
-    const compiledTemplate = ejs.compile(templateContent)
-    const otpTemplate = compiledTemplate({ email: newUser.email, otpCode: randomOTPCode })
-
-    await sendMail({
-      to: newUser.email,
-      subject: 'OTP Notification',
-      html: otpTemplate
-    })
-
-    // return res.render('users/register', {
-    //   message: 'User registered successfully. Please check your email for verification'
-    // })
     const session = req.session as CustomSession
     session.user = newUser
     return res.redirect('/auth/verify')
@@ -116,43 +93,24 @@ export const verifyController = async (req: Request, res: Response) => {
   }
 }
 
-export const resendOtpController = async (req: Request<ParamsDictionary, any, ResendOTPBody>, res: Response) => {
+export const resendOtpController = async (req: Request, res: Response) => {
   try {
     const { email } = req.body
     const user = await User.findOne({ where: { email } })
+
     if (!user) {
       return res.status(404).json({ message: 'Email not found' })
     }
+
     if (user?.isVerified === true) {
-      return res.status(400).json({
-        message: 'User has been verified before'
-      })
+      return res.status(400).json({ message: 'User has been verified before' })
     }
-    const randomOTPCode = Math.floor(100000 + Math.random() * 900000).toString()
 
-    // save otp in database
-    const otpExpirationTime = moment().add(1, 'days').toDate()
-    await OtpCode.create({
-      userId: (user as UserSchema).userId,
-      otpCode: randomOTPCode,
-      expiresAt: otpExpirationTime
+    await saveOtpAndSendEmail(user.userId, email)
+
+    return res.status(201).json({
+      message: 'An OTP code has been sent to your email. Please check your email for verification'
     })
-
-    // Send otp to user
-    const templatePath = path.resolve('src/views/users/sendOTP.ejs')
-    const templateContent = fs.readFileSync(templatePath, 'utf8')
-
-    const compiledTemplate = ejs.compile(templateContent)
-    const otpTemplate = compiledTemplate({ email, otpCode: randomOTPCode })
-
-    await sendMail({
-      to: email,
-      subject: 'OTP Notification',
-      html: otpTemplate
-    })
-    return res
-      .status(201)
-      .json({ message: 'An OTP code has been sent to your email. Please check your email for verification' })
   } catch (error) {
     console.error('Resend error:', error)
     res.status(500).render('error', { message: 'Internal server error' })

@@ -1,6 +1,12 @@
 import nodemailer, { Transporter } from 'nodemailer'
 import { OAuth2Client } from 'google-auth-library'
 import { config } from 'dotenv'
+import path from 'path'
+import fs from 'fs'
+import ejs from 'ejs'
+import { generateCode } from './generates'
+import moment from 'moment'
+import { OtpCode } from '~/models/schemas'
 config()
 
 const GOOGLE_MAILER_CLIENT_ID: string = process.env.GOOGLE_MAILER_CLIENT_ID as string
@@ -62,4 +68,29 @@ export const sendMail = async ({ to, subject, html }: { to: string; subject?: st
   } catch (err) {
     console.log('ERROR: ', err)
   }
+}
+
+export const saveOtpAndSendEmail = async (userId: number, email: string): Promise<void> => {
+  const OTPCode = generateCode(6, 'number')
+
+  // Save OTP in the database
+  const otpExpirationTime = moment().add(1, 'days').toDate()
+  await OtpCode.create({
+    userId,
+    otpCode: OTPCode,
+    expiresAt: otpExpirationTime
+  })
+
+  // Send OTP to user via email
+  const templatePath = path.resolve('src/views/users/sendOTP.ejs')
+  const templateContent = fs.readFileSync(templatePath, 'utf8')
+
+  const compiledTemplate = ejs.compile(templateContent)
+  const otpTemplate = compiledTemplate({ email, otpCode: OTPCode })
+
+  await sendMail({
+    to: email,
+    subject: 'OTP Notification',
+    html: otpTemplate
+  })
 }
